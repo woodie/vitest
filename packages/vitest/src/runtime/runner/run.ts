@@ -239,6 +239,17 @@ async function callSuiteHook<T extends keyof SuiteHooks>(
   }
 }
 
+function hasJustBeforeEachHooks(suite: Suite): boolean {
+  let current: Suite | null = suite
+  while (current) {
+    if (getHooks(current).justBeforeEach.length > 0) {
+      return true
+    }
+    current = 'filepath' in current ? null : current.suite || current.file
+  }
+  return false
+}
+
 function getAroundEachHooks(suite: Suite): AroundEachListener[] {
   const hooks: AroundEachListener[] = []
   const parentSuite: Suite | null = 'filepath' in suite ? null : suite.suite || suite.file
@@ -643,16 +654,18 @@ async function runTest(test: Test, runner: VitestRunner): Promise<void> {
             ),
           )
 
-          await $('test.justBeforeEach', () =>
-            callSuiteHook(
-              suite,
-              test,
-              'justBeforeEach',
-              runner,
-              [test.context, suite],
-              beforeEachCleanups,
-            ),
-          )
+          if (hasJustBeforeEachHooks(suite)) {
+            await $('test.justBeforeEach', () =>
+              callSuiteHook(
+                suite,
+                test,
+                'justBeforeEach',
+                runner,
+                [test.context, suite],
+                beforeEachCleanups,
+              ),
+            )
+          }
 
           if (runner.runTask) {
             await $('test.callback', () => limitMaxConcurrency(() => runner.runTask!(test)))
