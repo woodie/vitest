@@ -141,9 +141,10 @@ The execution follows this order:
 5. **For each test:**
    - [`aroundEach`](/api/hooks#aroundeach) hooks wrap around the test (must call `runTest()`)
    - `beforeEach` hooks execute (in order defined, or based on [`sequence.hooks`](/config/sequence#sequence-hooks))
+   - [`justBeforeEach`](/api/hooks#justbeforeeach) hooks execute, after every `beforeEach` hook, parent suites first
    - Test function executes
    - `afterEach` hooks execute (reverse order by default with `sequence.hooks: 'stack'`)
-   - Cleanup functions returned from `beforeEach` hooks execute (reverse order by default with `sequence.hooks: 'stack'`)
+   - Cleanup functions returned from `beforeEach` and `justBeforeEach` hooks execute (reverse order by default with `sequence.hooks: 'stack'`)
    - [`onTestFinished`](/api/hooks#ontestfinished) callbacks run (always in reverse order)
    - If test failed: [`onTestFailed`](/api/hooks#ontestfailed) callbacks run
    - Note: if `repeats` or `retry` are set, all of these steps are executed again

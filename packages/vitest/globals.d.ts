@@ -13,6 +13,7 @@ declare global {
   let beforeAll: (typeof import('vitest'))['beforeAll']
   let afterAll: (typeof import('vitest'))['afterAll']
   let beforeEach: (typeof import('vitest'))['beforeEach']
+  let justBeforeEach: (typeof import('vitest'))['justBeforeEach']
   let afterEach: (typeof import('vitest'))['afterEach']
   let aroundEach: (typeof import('vitest'))['aroundEach']
   let aroundAll: (typeof import('vitest'))['aroundAll']

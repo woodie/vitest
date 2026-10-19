@@ -185,7 +185,9 @@ async function callSuiteHook<T extends keyof SuiteHooks>(
   // stop at file level
   const parentSuite: Suite | null = 'filepath' in suite ? null : suite.suite || suite.file
 
-  if (name === 'beforeEach' && parentSuite) {
+  const isBeforeEach = name === 'beforeEach' || name === 'justBeforeEach'
+
+  if (isBeforeEach && parentSuite) {
     await callSuiteHook(parentSuite, currentTask, name, runner, args, cleanups)
   }
 
@@ -200,7 +202,7 @@ async function callSuiteHook<T extends keyof SuiteHooks>(
       return getBeforeHookCleanupCallback(
         hook,
         await hook(...args),
-        name === 'beforeEach' ? (args[0] as TestContext) : undefined,
+        isBeforeEach ? (args[0] as TestContext) : undefined,
       )
     })
   }
@@ -635,6 +637,17 @@ async function runTest(test: Test, runner: VitestRunner): Promise<void> {
               suite,
               test,
               'beforeEach',
+              runner,
+              [test.context, suite],
+              beforeEachCleanups,
+            ),
+          )
+
+          await $('test.justBeforeEach', () =>
+            callSuiteHook(
+              suite,
+              test,
+              'justBeforeEach',
               runner,
               [test.context, suite],
               beforeEachCleanups,
