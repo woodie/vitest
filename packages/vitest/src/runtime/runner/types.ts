@@ -6,7 +6,15 @@ import type { Bench } from '../benchmark'
 import type { SerializedConfig } from '../config'
 import type { TaskDeadline } from './deadline'
 import type { TestFixtures } from './fixture'
-import type { afterAll, afterEach, aroundAll, aroundEach, beforeAll, beforeEach } from './hooks'
+import type {
+  afterAll,
+  afterEach,
+  aroundAll,
+  aroundEach,
+  beforeAll,
+  beforeEach,
+  justBeforeEach,
+} from './hooks'
 import type { kChainableContext, TypedChainableFunction } from './utils/chain'
 
 export type RunMode = 'run' | 'skip' | 'only' | 'todo' | 'queued'
@@ -698,6 +706,7 @@ interface Hooks<ExtraContext> {
    * Test-level hooks receive all fixtures including test-scoped ones.
    */
   beforeEach: typeof beforeEach<ExtraContext>
+  justBeforeEach: typeof justBeforeEach<ExtraContext>
   afterEach: typeof afterEach<ExtraContext>
   aroundEach: typeof aroundEach<ExtraContext>
 }
@@ -1238,6 +1247,7 @@ export interface SuiteHooks<ExtraContext = object> {
   aroundAll: RegisteredAroundAllListener[]
 
   beforeEach: BeforeEachListener<ExtraContext>[]
+  justBeforeEach: BeforeEachListener<ExtraContext>[]
   afterEach: AfterEachListener<ExtraContext>[]
   aroundEach: AroundEachListener<ExtraContext>[]
 }

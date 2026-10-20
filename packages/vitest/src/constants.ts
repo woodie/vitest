@@ -33,6 +33,7 @@ export const globalApis: string[] = [
   'beforeAll',
   'afterAll',
   'beforeEach',
+  'justBeforeEach',
   'afterEach',
   'onTestFinished',
   'onTestFailed',

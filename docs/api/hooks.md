@@ -50,6 +50,50 @@ beforeEach(async () => {
 })
 ```
 
+## justBeforeEach <Version>5.1.0</Version> {#justbeforeeach}
+
+```ts
+function justBeforeEach(
+  body: (context: TestContext) => unknown,
+  timeout?: number,
+): void
+```
+
+Register a callback to be called right before each test in the current suite runs, after every [`beforeEach`](#beforeeach) hook has run, including the ones in nested suites. Like `beforeEach`, hooks of parent suites run first, and the callback can return a cleanup function.
+
+Use it when the action under test depends on values that nested suites change. A parent's `beforeEach` always runs before its children's, so an action placed there would run before any nested `beforeEach` had set its inputs. With `justBeforeEach`, the action is written once, and each suite changes only what it's about:
+
+```ts
+import { beforeEach, describe, expect, justBeforeEach, test } from 'vitest'
+
+describe('divide', () => {
+  let denominator: number
+  let result: number
+
+  beforeEach(() => {
+    denominator = 2
+  })
+
+  justBeforeEach(() => {
+    result = divide(10, denominator)
+  })
+
+  test('returns the quotient', () => {
+    expect(result).toBe(5)
+  })
+
+  describe('when the denominator is 1', () => {
+    beforeEach(() => {
+      denominator = 1
+    })
+
+    test('returns the numerator', () => {
+      expect(result).toBe(10)
+    })
+  })
+})
+```
+
 ## afterEach
 
 ```ts

@@ -155,27 +155,66 @@ export function beforeEach<ExtraContext = object>(
 ): void {
   assertTypes(fn, '"beforeEach" callback', ['function'])
   const stackTraceError = new Error('STACK_TRACE_ERROR')
+  return getCurrentSuite<ExtraContext>().on(
+    'beforeEach',
+    createBeforeEachListener(fn, timeout, stackTraceError),
+  )
+}
 
+/**
+ * Registers a callback function to be executed right before each test within the current suite, after every `beforeEach` hook has run, including the ones in nested suites.
+ * This hook is useful when the action under test depends on values that nested suites set in their own `beforeEach` hooks: declare the action once, and let each suite change only its inputs.
+ *
+ * **Note:** `justBeforeEach` hooks of parent suites run before the hooks of nested suites, the same as `beforeEach`.
+ *
+ * @param {Function} fn - The callback function to be executed right before each test. This function receives an `TestContext` parameter if additional test context is needed.
+ * @param {number} [timeout] - Optional timeout in milliseconds for the hook. If not provided, the default hook timeout from the runner's configuration is used.
+ * @returns {void}
+ * @example
+ * ```ts
+ * let denominator = 2
+ * let result: number
+ *
+ * beforeEach(() => { denominator = 2 })
+ * justBeforeEach(() => { result = divide(10, denominator) })
+ *
+ * describe('when the denominator is 1', () => {
+ *   beforeEach(() => { denominator = 1 })
+ *
+ *   test('returns the numerator', () => {
+ *     expect(result).toBe(10)
+ *   })
+ * })
+ * ```
+ */
+export function justBeforeEach<ExtraContext = object>(
+  fn: BeforeEachListener<ExtraContext>,
+  timeout: number = getDefaultHookTimeout(),
+): void {
+  assertTypes(fn, '"justBeforeEach" callback', ['function'])
+  const stackTraceError = new Error('STACK_TRACE_ERROR')
+  return getCurrentSuite<ExtraContext>().on(
+    'justBeforeEach',
+    createBeforeEachListener(fn, timeout, stackTraceError),
+  )
+}
+
+function createBeforeEachListener<ExtraContext>(
+  fn: BeforeEachListener<ExtraContext>,
+  timeout: number,
+  stackTraceError: Error,
+): BeforeEachListener<ExtraContext> {
   const wrapper: BeforeEachListener<ExtraContext> = (context, suite) => {
     const fixtureResolver = withFixtures(fn, { suite })
     return fixtureResolver(context)
   }
 
-  return getCurrentSuite<ExtraContext>().on(
-    'beforeEach',
-    Object.assign(
-      withTimeout(
-        wrapper,
-        timeout ?? getDefaultHookTimeout(),
-        true,
-        stackTraceError,
-        abortIfTimeout,
-      ),
-      {
-        [CLEANUP_TIMEOUT_KEY]: timeout,
-        [CLEANUP_STACK_TRACE_KEY]: stackTraceError,
-      },
-    ),
+  return Object.assign(
+    withTimeout(wrapper, timeout ?? getDefaultHookTimeout(), true, stackTraceError, abortIfTimeout),
+    {
+      [CLEANUP_TIMEOUT_KEY]: timeout,
+      [CLEANUP_STACK_TRACE_KEY]: stackTraceError,
+    },
   )
 }
 

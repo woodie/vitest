@@ -71,6 +71,7 @@ export {
   aroundEach,
   beforeAll,
   beforeEach,
+  justBeforeEach,
   onTestFailed,
   onTestFinished,
 } from '../runtime/runner/hooks'

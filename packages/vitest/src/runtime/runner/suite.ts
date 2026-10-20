@@ -32,7 +32,15 @@ import {
   withTimeout,
 } from './context'
 import { configureProps, TestFixtures, withFixtures } from './fixture'
-import { afterAll, afterEach, aroundAll, aroundEach, beforeAll, beforeEach } from './hooks'
+import {
+  afterAll,
+  afterEach,
+  aroundAll,
+  aroundEach,
+  beforeAll,
+  beforeEach,
+  justBeforeEach,
+} from './hooks'
 import { getHooks, setFn, setHooks, setTestFixture } from './map'
 import { getCurrentTest } from './test-state'
 import { createChainable, getChainableContext } from './utils/chain'
@@ -242,6 +250,7 @@ export function createSuiteHooks(): SuiteHooks {
     beforeAll: [],
     afterAll: [],
     beforeEach: [],
+    justBeforeEach: [],
     afterEach: [],
     aroundEach: [],
     aroundAll: [],
@@ -945,6 +954,7 @@ export function createTaskCollector(fn: (...args: any[]) => any): TestAPI {
   taskFn.describe = suite
   taskFn.suite = suite
   taskFn.beforeEach = beforeEach
+  taskFn.justBeforeEach = justBeforeEach
   taskFn.afterEach = afterEach
   taskFn.beforeAll = beforeAll
   taskFn.afterAll = afterAll
