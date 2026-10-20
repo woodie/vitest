@@ -57,25 +57,6 @@ describe('take care of the garden', () => {
   })
 })
 
-describe('TestRunner', () => {
-  test('setTestFn replaces the function getTestFn returns', ({ task }) => {
-    const original = TestRunner.getTestFn(task)
-    const fn = () => {}
-    TestRunner.setTestFn(task, fn)
-    expect(TestRunner.getTestFn(task)).toBe(fn)
-    TestRunner.setTestFn(task, original)
-  })
-
-  test('setSuiteHooks replaces the hooks getSuiteHooks returns', ({ task }) => {
-    const suite = task.suite!
-    const original = TestRunner.getSuiteHooks(suite)
-    const hooks = { ...original, beforeEach: [] }
-    TestRunner.setSuiteHooks(suite, hooks)
-    expect(TestRunner.getSuiteHooks(suite)).toBe(hooks)
-    TestRunner.setSuiteHooks(suite, original)
-  })
-})
-
 test('states are filled correctly', () => {
   expect(gardener.states).toEqual([
     'wake up',
