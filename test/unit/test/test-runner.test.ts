@@ -31,9 +31,11 @@ describe('TestRunner.setTestFn replaces the body of a test', () => {
 })
 
 describe('TestRunner.getSuiteHooks returns the hooks registered on a suite', () => {
+  const bumpTheCount = () => {}
+
   beforeAll(() => {})
   beforeEach(() => {})
-  beforeEach(() => {})
+  beforeEach(bumpTheCount)
 
   test('grouped by hook name', ({ task }) => {
     const hooks = TestRunner.getSuiteHooks(task.suite!)
